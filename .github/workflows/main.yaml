@@ -21,7 +21,7 @@ jobs:
     # The type of runner that the job will run on
     # (below syntax from https://mirai-solutions.ch/techguides/github-actions.html)
     runs-on: ${{ matrix.config.os }}
-    name: ${{ matrix.config.os }} (${{ matrox.config.r }})
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
     
     strategy:
       # We keep a matrix for convenience, but we would typically just run on one

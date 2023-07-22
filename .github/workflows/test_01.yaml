@@ -7,7 +7,11 @@ name: test_01
 run-name: ${{ github.actor }} is running test_01
 
 jobs:
-  write-message:
+  print-hello:
+  
+    # Runs on Ubuntu
+    runs-on: ubuntu-latest
+    
     steps:
       - uses: actions/checkout@v3
       - uses: r-lib/actions/setup-r@v2

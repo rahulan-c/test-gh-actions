@@ -1,5 +1,6 @@
 # Event - What starts this workflow?
-on: [push]
+on:
+  workflow_dispatch:
 
 # Name of the workflow
 name: hello-r-world

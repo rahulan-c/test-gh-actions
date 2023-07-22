@@ -25,7 +25,7 @@ jobs:
         run: Rscript -e 'print("hello from test_04")'
         
       - name: print-timeanddate
-        run: Rscript -e "print(paste0('Today is: ', Sys.Date()))"
+        run: Rscript -e 'print(paste0(Sys.Date()))'
         
       # - name: print-date
       #   run: Rscript -e 'cli::cli_inform("{lubridate::now(tzone = 'UTC')}")'

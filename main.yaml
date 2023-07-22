@@ -1,57 +1,18 @@
-
-name: basic
-
-# Controls when the action will run.
+# Event - What starts this workflow?
 on:
-  
-  # # Scheduled 
-  # schedule:
-  #   - cron:  '0 13 * * *'
-  
-  # # Triggered on push and pull request events
-  # push:
-  # pull_request:
-  
-  # Allow manual runs from the Actions tab
   workflow_dispatch:
 
+# Name of the workflow
+name: hello-r-world
 
-jobs: 
-  basic:
-    # The type of runner that the job will run on
-    # (below syntax from https://mirai-solutions.ch/techguides/github-actions.html)
-    runs-on: ${{ matrix.config.os }}
-    name: ${{ matrix.config.os }} (${{ matrox.config.r }})
-    
-    strategy:
-      # We keep a matrix for convenience, but we would typically just run on one
-      # single OS and R version, aligned with the target deployment environment
-      
-      matrix:
-        config:
-         - {os: ubuntu-latest, r: 'release'}
-         
-    env:
-     # Access token for Github
-     GITHUB_PAT: ${{ secrets.GH_TOKEN }}
-     
-     # Preserve package sources for informative references in case of errors
-     R_KEEP_PKG_SOURCE: yes
-
-    # Load repo and install R
+# Jobs - What the computer should do? 
+jobs:
+  write-message:
+    # Use Ubuntu   
+    runs-on: ubuntu-latest 
     steps:
-    - uses: actions/checkout@v2
-    - uses: r-lib/actions/setup-r@master
-    
-    - name: Install libcurl
-      run: sudo apt-get install libcurl4-openssl-dev
-        
-    - uses: r-lib/actions/setup-renv@v2
-    
-    - name: Check
-      run: Rscript -e "renv::restore()"
-
-    # Run R script
-    - name: print_datetime
-      run: Rscript print_datetime.R
-      
+       # Install R
+      - uses: r-lib/actions/setup-r@v3    
+      - name: print-message   
+        # Code to execute R script
+        run: Rscript -e 'print("Hello R World!")' 

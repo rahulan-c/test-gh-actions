@@ -1,61 +1,51 @@
-
-name: first_action
-
-# Controls when the action will run.
 on:
-  
-  # # Scheduled 
-  # schedule:
-  #   - cron:  '0 13 * * *'
-  
-  # # Triggered on push and pull request events
-  # push:
-  # pull_request:
-  
-  # Allow manual runs from the Actions tab
   workflow_dispatch:
 
+name: test_05
 
-jobs: 
-  basic:
-    # The type of runner that the job will run on
-    # (below syntax from https://mirai-solutions.ch/techguides/github-actions.html)
-    runs-on: ${{ matrix.config.os }}
-    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+run-name: ${{ github.actor }} is running test_05
+
+jobs:
+  test5:
     
-    strategy:
-      # We keep a matrix for convenience, but we would typically just run on one
-      # single OS and R version, aligned with the target deployment environment
-      
-      matrix:
-        config:
-         - {os: ubuntu-latest, r: 'release'}
-         
-    env:
-     # Access token for Github
-     GITHUB_PAT: ${{ secrets.GH_TOKEN }}
-     
-     # Preserve package sources for informative references in case of errors
-     R_KEEP_PKG_SOURCE: yes
-
-    # Load repo and install R
+    runs-on: ubuntu-latest 
+    
     steps:
-    
-    - name: Checkout master
-      uses: actions/checkout@master
-    
-    - name: Install libcurl
-      run: sudo apt-get install libcurl4-openssl-dev
+      - uses: actions/checkout@v3
       
-    - name: Setup R
-      uses: r-lib/actions/setup-r@master
-    
-    - name: Setup renv        
-      uses: r-lib/actions/setup-renv@v2
-    
-    - name: Run renv::restore()
-      run: Rscript -e "renv::restore()"
-
-    - name: Run print_datetime.R
-      run: Rscript print_datetime.R
+      # Setup R
+      - uses: r-lib/actions/setup-r@v2
       
+      # Setup renv
+      - name: Set RENV_PATHS_ROOT
+        shell: bash
+        run: |
+          echo "RENV_PATHS_ROOT=${{ runner.temp }}/renv" >> $GITHUB_ENV
+      - name: Install and activate renv
+        run: |
+          install.packages("renv")
+          renv::activate()
+        shell: Rscript {0}
+      - name: Get R and OS version
+        id: get-version
+        run: |
+          cat("##[set-output name=os-version;]", sessionInfo()$running, "\n", sep = "")
+          cat("##[set-output name=r-version;]", R.Version()$version.string, sep = "")
+        shell: Rscript {0}
+      - name: Restore Renv package cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.RENV_PATHS_ROOT }}
+          key: ${{ steps.get-version.outputs.os-version }}-${{ steps.get-version.outputs.r-version }}-${{ inputs.cache-version }}-${{ hashFiles('renv.lock') }}
+          restore-keys: ${{ steps.get-version.outputs.os-version }}-${{ steps.get-version.outputs.r-version }}-${{inputs.cache-version }}-
+    
+      # - uses: r-lib/actions/setup-renv@v2 # using r-lib example
+      
+      - name: print-message   
+        run: Rscript -e 'print("hello from test_05")'
+        
+      - name: print-timeanddate
+        run: Rscript -e 'print(paste0(Sys.Date()))'
+        
+      - name: print-timeanddate-two
+        run: Rscript -e 'cli::cli_inform(lubridate::now())'
